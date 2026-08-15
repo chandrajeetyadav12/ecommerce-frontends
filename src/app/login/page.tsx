@@ -22,8 +22,12 @@ import { loginUser } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { setUser } from "@/redux/slices/authSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAppSelector } from "@/redux/hooks";
+import Box from "@mui/material/Box";
+import Link from "next/link";
 export default function LoginPage() {
 
   const router = useRouter();
@@ -31,6 +35,8 @@ export default function LoginPage() {
   const user = useAppSelector(
     (state) => state.auth.user
   );
+  const [showPassword, setShowPassword] =
+  useState(false);
   const {
     register,
     handleSubmit,
@@ -56,7 +62,8 @@ export default function LoginPage() {
   ) => {
     try {
       const res = await loginUser(data);
-      console.log(res);
+     
+       if (!res.success) return;
       if (res.status === 200) {
         console.log("Login successful");
       }
@@ -94,7 +101,13 @@ export default function LoginPage() {
   };
 
   return (
-    <Container maxWidth="sm">
+       <Box
+      sx={{
+        maxWidth: 400,
+        mx: "auto",
+        mt: 4,
+      }}
+    >
       <Typography
         variant="h4"
       >
@@ -118,13 +131,34 @@ export default function LoginPage() {
 
         <CustomInput
           label="Password"
-          type="password"
+          type={
+            showPassword
+              ? "text"  
+            : "password"
+          }
           register={register(
             "password"
           )}
           error={
             errors.password?.message
           }
+            endAdornment={
+    <IconButton
+      type="button"
+      edge="end"
+      onClick={() =>
+        setShowPassword(
+          (prev) => !prev
+        )
+      }
+    >
+      {showPassword ? (
+        <FaEyeSlash />
+      ) : (
+        <FaEye />
+      )}
+    </IconButton>
+  }
         />
 
         <Button
@@ -135,6 +169,22 @@ export default function LoginPage() {
           Login
         </Button>
       </form>
-    </Container>
+      <Typography
+  align="center"
+  sx={{ mt: 2 }}
+>
+  First time here?{" "}
+  <Link
+    href="/register"
+    style={{
+      color: "#1976d2",
+      textDecoration: "none",
+      fontWeight: 600,
+    }}
+  >
+    Create an account
+  </Link>
+</Typography>
+    </Box>
   );
 }

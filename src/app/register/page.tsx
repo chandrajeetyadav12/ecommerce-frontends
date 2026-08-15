@@ -12,14 +12,17 @@ import {
   registerSchema,
   RegisterFormData,
 } from "@/validations/authSchema";
-
-
+import Link from "next/link";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import CustomInput from "@/components/common/CustomInput";
 
 import { registerUser } from "@/services/auth.service";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 export default function RegisterPage() {
+  const [showPassword, setShowPassword] =
+    useState(false);
   const {
     register,
     handleSubmit,
@@ -84,12 +87,34 @@ export default function RegisterPage() {
 
         <CustomInput
           label="Password"
-          type="password"
+          type={
+            showPassword
+              ? "text"
+              : "password"
+          }
           register={register(
             "password"
           )}
           error={
             errors.password?.message
+          }
+          endAdornment={
+            <IconButton
+              type="button"
+              edge="end"
+              onClick={() =>
+                setShowPassword(
+                  !showPassword
+                )
+              }
+           
+            >
+              {showPassword ? (
+                <FaEyeSlash />
+              ) : (
+                <FaEye />
+              )}
+            </IconButton>
           }
         />
 
@@ -102,6 +127,22 @@ export default function RegisterPage() {
           Register
         </Button>
       </form>
+      <Typography
+  align="center"
+  sx={{ mt: 2 }}
+>
+  Already have an account?{" "}
+  <Link
+    href="/login"
+    style={{
+      color: "#1976d2",
+      textDecoration: "none",
+      fontWeight: 600,
+    }}
+  >
+    Login
+  </Link>
+</Typography>
     </Box>
   );
 }
