@@ -29,10 +29,12 @@ export default function ProductCard({
   return (
     <Card
       sx={{
-        width: {
-          xs: "100%",
-          sm: 300,
-        },
+        width: "100%",
+        maxWidth: 360,
+        mx: "auto",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       {product.images?.[0] && (
@@ -50,28 +52,66 @@ export default function ProductCard({
         />
       )}
 
-      <CardContent>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Typography
           variant="h6"
+          sx={{ mb: 1.5, fontWeight: 600 }}
         >
           {product.name}
         </Typography>
 
-        <Typography>
-          ₹ {product.price}
+        <Typography
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 1,
+            mb: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>Price:</span>
+          <span style={{ fontWeight: 400 }}>₹ {product.price}</span>
         </Typography>
 
-        <Typography>
-          Seller:{" "}
-          {
-            product.sellerId
-              ?.name
-          }
+        <Typography
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 1,
+            mb: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>Stock:</span>
+          <span style={{ fontWeight: 400 }}>
+            {product.stock} units
+          </span>
         </Typography>
 
-        <Typography>
-          Status:{" "}
-          {product.status}
+        <Typography
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 1,
+            mb: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>Status:</span>
+          <span style={{ fontWeight: 400 }}>{product.status}</span>
+        </Typography>
+
+        <Typography
+          sx={{
+            display: "flex",
+            // flexDirection: "column",
+            gap: 0.5,
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>Description:</span>
+          <span style={{ fontWeight: 400, whiteSpace: "pre-wrap" }}>
+            {product.description}
+          </span>
         </Typography>
       </CardContent>
 

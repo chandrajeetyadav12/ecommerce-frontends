@@ -32,6 +32,14 @@ import { createProduct } from "@/services/product.service";
 import { getCategories } from "@/services/category.service";
 import { Category } from "@/types/category";
 
+type ApiError = {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+};
+
 export default function ProductForm() {
     const [loading, setLoading] =
         useState(false);
@@ -54,6 +62,12 @@ export default function ProductForm() {
 
         fetchCategories();
     }, []);
+
+    const showAlert = (message: string) => {
+        if (typeof window !== "undefined") {
+            window.alert(message);
+        }
+    };
 
     const {
         register,
@@ -113,11 +127,26 @@ export default function ProductForm() {
                     formData
                 );
 
-            console.log(res);
+            if (!res.success) {
+                showAlert(
+                    res.message ||
+                        "Product creation failed"
+                );
+                return;
+            }
 
+            showAlert(
+                res.message ||
+                    "Product created successfully"
+            );
             reset();
         } catch (error) {
-            console.log(error);
+            const apiError = error as ApiError;
+            const message =
+                apiError.response?.data?.message ||
+                "Something went wrong";
+
+            showAlert(message);
         }
         finally {
             setLoading(false);

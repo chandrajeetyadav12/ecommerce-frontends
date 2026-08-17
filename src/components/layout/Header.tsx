@@ -117,7 +117,7 @@ export default function Header() {
           variant="h6"
           sx={{ color: "inherit", textDecoration: "none", fontWeight: 700 }}
         >
-          Ecommerce Store
+          BuyVerse Mart
         </Typography>
 
         {isMobile ? (

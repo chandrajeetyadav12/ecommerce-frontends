@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import {
   getProducts,
@@ -18,22 +19,45 @@ import { Product } from "@/types/product";
 export default function ProductList() {
   const [products, setProducts] =
     useState<Product[]>([]);
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     const fetchProducts =
       async () => {
-        const res =
-          await getProducts();
+        try {
+          setLoading(true);
+          const res =
+            await getProducts();
 
-        if (res.success) {
-          setProducts(
-            res.products
-          );
+          if (res.success) {
+            setProducts(
+              res.products
+            );
+          }
+        } finally {
+          setLoading(false);
         }
       };
 
     fetchProducts();
   }, []);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: 200,
+          width: "100%",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box

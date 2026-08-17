@@ -14,7 +14,6 @@ import {
 } from "@/validations/authSchema";
 
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 
 import CustomInput from "@/components/common/CustomInput";
@@ -26,17 +25,32 @@ import { useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAppSelector } from "@/redux/hooks";
+import type { RootState } from "@/redux/store";
 import Box from "@mui/material/Box";
 import Link from "next/link";
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
+
 export default function LoginPage() {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector(
-    (state) => state.auth.user
+    (state: RootState) => state.auth.user
   );
   const [showPassword, setShowPassword] =
   useState(false);
+
+  const showAlert = (message: string) => {
+    if (typeof window !== "undefined") {
+      window.alert(message);
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -62,16 +76,21 @@ export default function LoginPage() {
   ) => {
     try {
       const res = await loginUser(data);
-     
-       if (!res.success) return;
-      if (res.status === 200) {
-        console.log("Login successful");
-      }
-      if (res.success) {
-        dispatch(setUser(res.user));
 
-        console.log("Redux Updated");
+      if (!res.success) {
+        showAlert(
+          res.message ||
+            "Invalid credentials"
+        );
+        return;
       }
+
+      dispatch(setUser(res.user));
+      showAlert(
+        res.message ||
+          "Login successful"
+      );
+
       if (res.user.role === "admin") {
         router.replace("/admin/dashboard");
       } else if (
@@ -79,25 +98,24 @@ export default function LoginPage() {
         res.user.status === "approved"
       ) {
         router.replace("/seller/dashboard");
-      }
-      if (
+      } else if (
         res.user.role === "seller" &&
         res.user.status === "pending"
       ) {
         router.push("/seller/pending");
-      }
-      else if (res.user.role === "customer") {
+      } else if (res.user.role === "customer") {
         router.replace("/customer/dashboard");
-      }
-  
-      else {
+      } else {
         router.push("/");
       }
+    } catch (error) {
+      const apiError = error as ApiError;
+      const message =
+        apiError.response?.data?.message ||
+        "Something went wrong";
+
+      showAlert(message);
     }
-    catch (err) {
-      console.error(err);
-    }
-    console.log(data);
   };
 
   return (

@@ -20,7 +20,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h3">
-          Welcome To Ecommerce Store
+          Welcome To BuyVerse Mart
         </Typography>
 
         <Typography

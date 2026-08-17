@@ -24,7 +24,21 @@ import {
   Typography,
 } from "@mui/material";
 
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
+
 export default function CategoryForm() {
+  const showAlert = (message: string) => {
+    if (typeof window !== "undefined") {
+      window.alert(message);
+    }
+  };
+
   const {
     register,
     handleSubmit,
@@ -49,11 +63,25 @@ export default function CategoryForm() {
           data
         );
 
-      console.log(res);
+      if (!res.success) {
+        showAlert(
+          res.message ||
+            "Category creation failed"
+        );
+        return;
+      }
 
+      showAlert(
+        "Category created successfully"
+      );
       reset();
     } catch (error) {
-      console.log(error);
+      const apiError = error as ApiError;
+      const message =
+        apiError.response?.data?.message ||
+        "Something went wrong";
+
+      showAlert(message);
     }
   };
 

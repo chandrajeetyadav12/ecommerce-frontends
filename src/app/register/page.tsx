@@ -20,9 +20,26 @@ import CustomInput from "@/components/common/CustomInput";
 
 import { registerUser } from "@/services/auth.service";
 import { Box, Button, IconButton, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
+
 export default function RegisterPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] =
     useState(false);
+
+  const showAlert = (message: string) => {
+    if (typeof window !== "undefined") {
+      window.alert(message);
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -39,9 +56,26 @@ export default function RegisterPage() {
       const res =
         await registerUser(data);
 
-      console.log(res);
+      if (!res.success) {
+        showAlert(
+          res.message ||
+            "Registration failed"
+        );
+        return;
+      }
+
+      showAlert(
+        res.message ||
+          "Registered successfully"
+      );
+      router.push("/login");
     } catch (error) {
-      console.log(error);
+      const apiError = error as ApiError;
+      const message =
+        apiError.response?.data?.message ||
+        "Something went wrong";
+
+      showAlert(message);
     }
   };
 
