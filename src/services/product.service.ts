@@ -10,6 +10,31 @@ export const createProduct = async (
 
   return response.data;
 };
+
+export const getProducts = async (
+  params?: {
+    category?: string;
+    search?: string;
+  }
+) => {
+  const query = new URLSearchParams();
+
+  if (params?.category) {
+    query.append("category", params.category);
+  }
+
+  if (params?.search) {
+    query.append("search", params.search);
+  }
+
+  const queryString = query.toString();
+  const response = await api.get(
+    `/products${queryString ? `?${queryString}` : ""}`
+  );
+
+  return response.data;
+};
+
 //admin getting pending products
 export const getPendingProducts =
   async () => {
@@ -80,16 +105,6 @@ export const deleteProduct =
     const response =
       await api.delete(
         `/products/${id}`
-      );
-
-    return response.data;
-  };
-// public getting all products which is admin approved
-  export const getProducts =
-  async () => {
-    const response =
-      await api.get(
-        "/products"
       );
 
     return response.data;
