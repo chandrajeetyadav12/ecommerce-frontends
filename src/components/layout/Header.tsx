@@ -21,9 +21,14 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "@/redux/hooks";
+import type { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
+import { getCart } from "@/services/cart.service";
 import { logoutUser } from "@/services/auth.service";
+import { setCartCount } from "@/redux/slices/cartSlice";
+import { useEffect } from "react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -32,7 +37,29 @@ export default function Header() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const cartCount = useSelector((state: RootState) => state.cart.count);
+
+  useEffect(() => {
+    const loadCartCount = async () => {
+      try {
+        const res = await getCart();
+
+        if (res.success) {
+          const total = (res.cart?.items || []).reduce(
+            (sum: number, item: { quantity: number }) => sum + item.quantity,
+            0
+          );
+
+          dispatch(setCartCount(total));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    loadCartCount();
+  }, [dispatch]);
 
   const handleLogout = async () => {
     try {
@@ -72,6 +99,32 @@ export default function Header() {
 
         <Button color="inherit" component={Link} href="/products" onClick={handleClose}>
           Products
+        </Button>
+
+        <Button color="inherit" component={Link} href="/cart" onClick={handleClose} sx={{ position: "relative" }}>
+          Cart
+          {cartCount > 0 && (
+            <Box
+              component="span"
+              sx={{
+                position: "absolute",
+                top: -6,
+                right: -8,
+                minWidth: 18,
+                height: 18,
+                borderRadius: 9,
+                bgcolor: "error.main",
+                color: "#fff",
+                fontSize: 10,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                px: 0.5,
+              }}
+            >
+              {cartCount}
+            </Box>
+          )}
         </Button>
 
         {!user ? (
@@ -142,6 +195,12 @@ export default function Header() {
                   <ListItem disablePadding>
                     <ListItemButton component={Link} href="/products" onClick={() => setOpen(false)}>
                       <ListItemText primary="Products" />
+                    </ListItemButton>
+                  </ListItem>
+
+                  <ListItem disablePadding>
+                    <ListItemButton component={Link} href="/cart" onClick={() => setOpen(false)}>
+                      <ListItemText primary={`Cart (${cartCount})`} />
                     </ListItemButton>
                   </ListItem>
 

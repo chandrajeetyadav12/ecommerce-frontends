@@ -1,7 +1,6 @@
 import {
   useDispatch,
   useSelector,
-  TypedUseSelectorHook,
 } from "react-redux";
 
 import type {
@@ -10,8 +9,7 @@ import type {
 } from "./store";
 
 export const useAppDispatch =
-  () => useDispatch<AppDispatch>();
+  useDispatch.withTypes<AppDispatch>();
 
-export const useAppSelector:
-  TypedUseSelectorHook<RootState> =
-  useSelector;
+export const useAppSelector =
+  useSelector.withTypes<RootState>();

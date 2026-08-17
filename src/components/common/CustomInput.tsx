@@ -2,14 +2,22 @@
 
 import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
 
 interface Props {
   label: string;
   error?: string;
   type?: string;
   register?: any;
-   endAdornment?: ReactNode;
+  endAdornment?: ReactNode;
+  value?: string | number;
+  onChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  inputProps?: Record<string, unknown>;
+  size?: "small" | "medium";
+  sx?: object;
+  placeholder?: string;
+  disabled?: boolean;
+  name?: string;
 }
 
 export default function CustomInput({
@@ -17,7 +25,15 @@ export default function CustomInput({
   error,
   type = "text",
   register,
-  endAdornment
+  endAdornment,
+  value,
+  onChange,
+  inputProps,
+  size = "medium",
+  sx,
+  placeholder,
+  disabled,
+  name,
 }: Props) {
   return (
     <TextField
@@ -27,15 +43,21 @@ export default function CustomInput({
       type={type}
       error={!!error}
       helperText={error}
-      {...register}
+      value={value}
+      onChange={onChange}
+      name={name}
+      placeholder={placeholder}
+      disabled={disabled}
+      size={size}
+      sx={sx}
+      {...(register ?? {})}
       slotProps={{
         input: {
           endAdornment: endAdornment ? (
-            <InputAdornment position="end">
-              {endAdornment}
-            </InputAdornment>
+            <InputAdornment position="end">{endAdornment}</InputAdornment>
           ) : undefined,
         },
+        htmlInput: inputProps,
       }}
     />
   );

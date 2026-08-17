@@ -11,11 +11,15 @@ import {
   Typography,
 } from "@mui/material";
 import { getProductById } from "@/services/product.service";
+import { addToCart } from "@/services/cart.service";
 import { Product } from "@/types/product";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCartCount } from "@/redux/slices/cartSlice";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const dispatch = useAppDispatch();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,6 +69,22 @@ export default function ProductDetailsPage() {
     typeof product.category === "string"
       ? product.category
       : product.category?.name || "Uncategorized";
+
+  const handleAddToCart = async () => {
+    if (!product?._id) return;
+
+    try {
+      const res = await addToCart(product._id, 1);
+
+      if (res.success) {
+        dispatch(setCartCount(res.cartCount || 0));
+        window.alert("Product added to cart");
+      }
+    } catch (error) {
+      console.log(error);
+      window.alert("Unable to add to cart");
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", px: 2, py: 5 }}>
@@ -152,7 +172,12 @@ export default function ProductDetailsPage() {
             </Typography>
           </Box>
 
-          <Button variant="contained" size="large" sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ mt: 2 }}
+            onClick={handleAddToCart}
+          >
             Add to Cart
           </Button>
         </Box>
