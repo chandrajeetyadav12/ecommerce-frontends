@@ -1,0 +1,173 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  Typography,
+} from "@mui/material";
+import { getProductById } from "@/services/product.service";
+import { Product } from "@/types/product";
+
+export default function ProductDetailsPage() {
+  const params = useParams();
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const res = await getProductById(id);
+
+        if (res.success) {
+          setProduct(res.product);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "60vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Box sx={{ p: 4, textAlign: "center" }}>
+        <Typography variant="h5">Product not found</Typography>
+      </Box>
+    );
+  }
+
+  const categoryName =
+    typeof product.category === "string"
+      ? product.category
+      : product.category?.name || "Uncategorized";
+
+  return (
+    <Box sx={{ maxWidth: 1200, mx: "auto", px: 2, py: 5 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1.2fr 1fr" },
+          gap: 4,
+          alignItems: "start",
+        }}
+      >
+        <Box
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid #e0e0e0",
+            bgcolor: "#fff",
+          }}
+        >
+          {product.images?.[0] ? (
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              width={900}
+              height={700}
+              unoptimized
+              style={{
+                width: "100%",
+                height: "100%",
+                maxHeight: 600,
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ) : (
+            <Box
+              sx={{
+                height: 420,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "#f5f5f5",
+              }}
+            >
+              <Typography variant="h6">No image available</Typography>
+            </Box>
+          )}
+        </Box>
+
+        <Box>
+          <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
+            {product.name}
+          </Typography>
+
+          <Typography variant="h5" sx={{ mb: 2, color: "primary.main" }}>
+            ₹ {product.price}
+          </Typography>
+
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ fontWeight: 700, display: "inline" }}>
+              Category:{" "}
+            </Typography>
+            <Typography sx={{ display: "inline", fontWeight: 400 }}>
+              {categoryName}
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ fontWeight: 700, display: "inline" }}>
+              Stock:{" "}
+            </Typography>
+            <Typography sx={{ display: "inline", fontWeight: 400 }}>
+              {product.stock} units
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ fontWeight: 700, display: "inline" }}>
+              Seller:{" "}
+            </Typography>
+            <Typography sx={{ display: "inline", fontWeight: 400 }}>
+              {typeof product.sellerId === "object" && product.sellerId?.name
+                ? product.sellerId.name
+                : "Seller"}
+            </Typography>
+          </Box>
+
+          <Button variant="contained" size="large" sx={{ mt: 2 }}>
+            Add to Cart
+          </Button>
+        </Box>
+      </Box>
+
+      <Divider sx={{ my: 5 }} />
+
+      <Box>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
+          Description
+        </Typography>
+        <Typography sx={{ whiteSpace: "pre-wrap", lineHeight: 1.8 }}>
+          {product.description}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}

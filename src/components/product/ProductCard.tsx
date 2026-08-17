@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -115,38 +116,51 @@ export default function ProductCard({
         </Typography>
       </CardContent>
 
-      {(onApprove ||
-        onReject) && (
-        <CardActions>
-          {onApprove && (
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() =>
-                onApprove(
-                  product._id
-                )
-              }
-            >
-              Approve
-            </Button>
-          )}
+      <CardActions sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+        <Button
+          component={Link}
+          href={`/products/${product._id}`}
+          variant="outlined"
+          size="small"
+        >
+          View Details
+        </Button>
 
-          {onReject && (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() =>
-                onReject(
-                  product._id
-                )
-              }
-            >
-              Reject
-            </Button>
-          )}
-        </CardActions>
-      )}
+        {(onApprove ||
+          onReject) && (
+          <>
+            {onApprove && (
+              <Button
+                variant="contained"
+                color="success"
+                size="small"
+                onClick={() =>
+                  onApprove(
+                    product._id
+                  )
+                }
+              >
+                Approve
+              </Button>
+            )}
+
+            {onReject && (
+              <Button
+                variant="contained"
+                color="error"
+                size="small"
+                onClick={() =>
+                  onReject(
+                    product._id
+                  )
+                }
+              >
+                Reject
+              </Button>
+            )}
+          </>
+        )}
+      </CardActions>
     </Card>
   );
 }
