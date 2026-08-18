@@ -31,7 +31,7 @@ export default function ProductCard({
     <Card
       sx={{
         width: "100%",
-        maxWidth: 360,
+        maxWidth: "none",
         mx: "auto",
         height: "100%",
         display: "flex",
