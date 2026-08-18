@@ -57,7 +57,7 @@ export default function CustomerSidebar() {
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
-            href="/customer/orders"
+            href="/customer/order"
           >
             <ListItemText
               primary="My Orders"

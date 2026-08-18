@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { getProductById } from "@/services/product.service";
-import { addToCart } from "@/services/cart.service";
+import { addToCart, getCart } from "@/services/cart.service";
 import { Product } from "@/types/product";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCartCount } from "@/redux/slices/cartSlice";
@@ -22,6 +22,7 @@ export default function ProductDetailsPage() {
   const dispatch = useAppDispatch();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cartQuantity, setCartQuantity] = useState(0);
 
   useEffect(() => {
     if (!id) return;
@@ -29,10 +30,23 @@ export default function ProductDetailsPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await getProductById(id);
+        const [productRes, cartRes] = await Promise.all([
+          getProductById(id),
+          getCart(),
+        ]);
 
-        if (res.success) {
-          setProduct(res.product);
+        if (productRes.success) {
+          setProduct(productRes.product);
+        }
+
+        if (cartRes.success) {
+          const existingItem = (cartRes.cart?.items || []).find(
+            (item: any) =>
+              item.productId?._id?.toString() === id.toString() ||
+              item.productId?.toString() === id.toString()
+          );
+
+          setCartQuantity(existingItem?.quantity || 0);
         }
       } finally {
         setLoading(false);
@@ -70,15 +84,31 @@ export default function ProductDetailsPage() {
       ? product.category
       : product.category?.name || "Uncategorized";
 
+  const availableStock = Math.max(product.stock - cartQuantity, 0);
+  const canAddToCart = product.stock > 0 && cartQuantity < product.stock;
+
   const handleAddToCart = async () => {
     if (!product?._id) return;
+
+    if (product.stock <= 0) {
+      window.alert("This product is out of stock");
+      return;
+    }
+
+    if (cartQuantity >= product.stock) {
+      window.alert(`Only ${availableStock} item(s) left in stock for this product`);
+      return;
+    }
 
     try {
       const res = await addToCart(product._id, 1);
 
       if (res.success) {
+        setCartQuantity((prev) => Math.min(prev + 1, product.stock));
         dispatch(setCartCount(res.cartCount || 0));
         window.alert("Product added to cart");
+      } else {
+        window.alert(res.message || "Unable to add to cart");
       }
     } catch (error) {
       console.log(error);
@@ -177,8 +207,13 @@ export default function ProductDetailsPage() {
             size="large"
             sx={{ mt: 2 }}
             onClick={handleAddToCart}
+            disabled={!canAddToCart}
           >
-            Add to Cart
+            {product.stock <= 0
+              ? "Out of Stock"
+              : cartQuantity >= product.stock
+                ? "Max Reached"
+                : "Add to Cart"}
           </Button>
         </Box>
       </Box>

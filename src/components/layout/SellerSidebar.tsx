@@ -72,7 +72,7 @@ export default function SellerSidebar() {
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
-            href="/seller/orders"
+            href="/seller/order"
           >
             <ListItemText
               primary="Orders"

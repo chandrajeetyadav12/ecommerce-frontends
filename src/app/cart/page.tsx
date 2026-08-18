@@ -15,11 +15,12 @@ import { getCart, removeFromCart, updateCartItem } from "@/services/cart.service
 import { useAppDispatch } from "@/redux/hooks";
 import { setCartItems } from "@/redux/slices/cartSlice";
 import CustomInput from "@/components/common/CustomInput";
-
+import { useRouter } from "next/navigation";
 interface CartProduct {
   _id: string;
   name: string;
   price: number;
+  stock: number;
   images: string[];
   category?: {
     _id: string;
@@ -37,6 +38,7 @@ export default function CartPage() {
   const dispatch = useAppDispatch();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const fetchCart = async () => {
     try {
@@ -65,9 +67,21 @@ export default function CartPage() {
   }, [dispatch]);
 
   const handleQtyChange = async (productId: string, quantity: number) => {
-    if (quantity < 1) return;
+    if (!productId) return;
 
-    await updateCartItem(productId, quantity);
+    const currentItem = items.find((item) => item.productId?._id === productId);
+    const maxQty = currentItem?.productId?.stock ?? quantity;
+
+    if (quantity < 1) return;
+    if (quantity > maxQty) return;
+
+    const res = await updateCartItem(productId, quantity);
+
+    if (!res.success) {
+      window.alert(res.message || "Unable to update quantity");
+      return;
+    }
+
     fetchCart();
   };
 
@@ -167,6 +181,7 @@ export default function CartPage() {
                     variant="outlined"
                     size="small"
                     onClick={() => handleQtyChange(item.productId?._id, item.quantity - 1)}
+                    disabled={item.quantity <= 1}
                   >
                     -
                   </Button>
@@ -176,12 +191,12 @@ export default function CartPage() {
                     type="number"
                     size="small"
                     value={item.quantity}
-                    inputProps={{ min: 1, style: { textAlign: "center" } }}
+                    inputProps={{ min: 1, max: item.productId?.stock || 1, style: { textAlign: "center" } }}
                     sx={{ width: 90, margin: 0 }}
                     onChange={(event) => {
                       const value = Number(event.target.value);
                       if (!Number.isNaN(value)) {
-                        handleQtyChange(item.productId?._id, value);
+                        handleQtyChange(item.productId?._id, Math.min(value, item.productId?.stock || value));
                       }
                     }}
                   />
@@ -190,6 +205,7 @@ export default function CartPage() {
                     variant="outlined"
                     size="small"
                     onClick={() => handleQtyChange(item.productId?._id, item.quantity + 1)}
+                    disabled={item.quantity >= (item.productId?.stock || 1)}
                   >
                     +
                   </Button>
@@ -221,7 +237,11 @@ export default function CartPage() {
             <Typography sx={{ fontWeight: 700 }}>₹ {subtotal}</Typography>
           </Box>
 
-          <Button variant="contained" fullWidth size="large">
+          <Button variant="contained" fullWidth size="large"
+            onClick={() =>
+              router.push("/checkout")
+            }
+          >
             Checkout
           </Button>
         </Box>
