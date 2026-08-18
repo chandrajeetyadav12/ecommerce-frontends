@@ -84,8 +84,13 @@ export default function ProductCard({
           }}
         >
           <span style={{ fontWeight: 700 }}>Stock:</span>
-          <span style={{ fontWeight: 400 }}>
-            {product.stock} units
+          <span
+            style={{
+              fontWeight: 400,
+              color: product.stock === 0 ? "#d32f2f" : "inherit",
+            }}
+          >
+            {product.stock === 0 ? "Out of Stock" : `${product.stock} units`}
           </span>
         </Typography>
 

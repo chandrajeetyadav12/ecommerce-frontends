@@ -82,101 +82,75 @@ export default function RegisterPage() {
   return (
     <Box
       sx={{
-        maxWidth: 400,
-        mx: "auto",
-        mt: 4,
+        display: "flex",
+        justifyContent: "center",
+        px: { xs: 2, sm: 3 },
+        py: { xs: 3, sm: 5 },
       }}
     >
-      <Typography
-        variant="h4"
-        component="h1"
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: 460,
+          border: "1px solid #d0d7de",
+          borderRadius: 3,
+          p: { xs: 2.5, sm: 4 },
+          bgcolor: "#fff",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.05)",
+        }}
       >
-        Register
-      </Typography>
-
-      <form
-        onSubmit={handleSubmit(
-          onSubmit
-        )}
-      >
-        <CustomInput
-          label="Name"
-          register={register(
-            "name"
-          )}
-          error={
-            errors.name?.message
-          }
-        />
-
-        <CustomInput
-          label="Email"
-          register={register(
-            "email"
-          )}
-          error={
-            errors.email?.message
-          }
-        />
-
-        <CustomInput
-          label="Password"
-          type={
-            showPassword
-              ? "text"
-              : "password"
-          }
-          register={register(
-            "password"
-          )}
-          error={
-            errors.password?.message
-          }
-          endAdornment={
-            <IconButton
-              type="button"
-              edge="end"
-              onClick={() =>
-                setShowPassword(
-                  !showPassword
-                )
-              }
-           
-            >
-              {showPassword ? (
-                <FaEyeSlash />
-              ) : (
-                <FaEye />
-              )}
-            </IconButton>
-          }
-        />
-
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          sx={{ mt: 2 }}
-        >
+        <Typography variant="h4" component="h1" sx={{ mb: 3, textAlign: "center" }}>
           Register
-        </Button>
-      </form>
-      <Typography
-  align="center"
-  sx={{ mt: 2 }}
->
-  Already have an account?{" "}
-  <Link
-    href="/login"
-    style={{
-      color: "#1976d2",
-      textDecoration: "none",
-      fontWeight: 600,
-    }}
-  >
-    Login
-  </Link>
-</Typography>
+        </Typography>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CustomInput
+            label="Name"
+            register={register("name")}
+            error={errors.name?.message}
+          />
+
+          <CustomInput
+            label="Email"
+            register={register("email")}
+            error={errors.email?.message}
+          />
+
+          <CustomInput
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            register={register("password")}
+            error={errors.password?.message}
+            endAdornment={
+              <IconButton
+                type="button"
+                edge="end"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </IconButton>
+            }
+          />
+
+          <Button fullWidth type="submit" variant="contained" sx={{ mt: 2 }}>
+            Register
+          </Button>
+        </form>
+
+        <Typography align="center" sx={{ mt: 2 }}>
+          Already have an account? {" "}
+          <Link
+            href="/login"
+            style={{
+              color: "#1976d2",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            Login
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 }

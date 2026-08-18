@@ -9,18 +9,28 @@ export default function CustomerLayout({
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
       }}
     >
-      <CustomerSidebar />
-
-      <main
+      <div
         style={{
-          flex: 1,
-          padding: "20px",
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
         }}
       >
-        {children}
-      </main>
+        <CustomerSidebar />
+
+        <main
+          style={{
+            flex: 1,
+            padding: "20px",
+            minWidth: 0,
+          }}
+        >
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
