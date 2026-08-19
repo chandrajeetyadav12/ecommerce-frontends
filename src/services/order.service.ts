@@ -1,8 +1,8 @@
 import api from "@/lib/axios";
-
+import type { MyOrdersResponse } from "@/types/order";
 
 export const getMyOrders =
-  async () => {
+  async (): Promise<MyOrdersResponse> => {
     const response =
       await api.get(
         "/orders/my-orders"
