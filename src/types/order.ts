@@ -51,5 +51,6 @@ export interface Order {
 export interface MyOrdersResponse {
   success: boolean;
   orders: Order[];
+  overallTotal: number;
   message?: string;
 }

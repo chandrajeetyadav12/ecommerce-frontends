@@ -136,13 +136,34 @@ export default function OrderCard({ order }: OrderCardProps) {
             </Typography>
           </Box>
 
-          <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
-            <Typography variant="body2" color="text.secondary">
-              Total amount
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              ₹{order.totalAmount.toLocaleString("en-IN")}
-            </Typography>
+          <Box sx={{ minWidth: { sm: 220 }, textAlign: { xs: "left", sm: "right" } }}>
+            <Stack spacing={0.5}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Items total
+                </Typography>
+                <Typography variant="body2">
+                  ₹{order.subtotal.toLocaleString("en-IN")}
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Shipping
+                </Typography>
+                <Typography variant="body2">
+                  {order.shippingCharge === 0
+                    ? "Free"
+                    : `₹${order.shippingCharge.toLocaleString("en-IN")}`}
+                </Typography>
+              </Box>
+              <Divider sx={{ my: 0.5 }} />
+              <Box sx={{ display: "flex", justifyContent: "space-between", gap: 3 }}>
+                <Typography sx={{ fontWeight: 700 }}>Total charge</Typography>
+                <Typography sx={{ fontWeight: 700 }}>
+                  ₹{order.totalAmount.toLocaleString("en-IN")}
+                </Typography>
+              </Box>
+            </Stack>
           </Box>
         </Stack>
       </CardContent>

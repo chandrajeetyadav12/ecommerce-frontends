@@ -15,11 +15,14 @@ import { addToCart, getCart } from "@/services/cart.service";
 import { Product } from "@/types/product";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCartCount } from "@/redux/slices/cartSlice";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const dispatch = useAppDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [cartQuantity, setCartQuantity] = useState(0);
@@ -32,14 +35,14 @@ export default function ProductDetailsPage() {
         setLoading(true);
         const [productRes, cartRes] = await Promise.all([
           getProductById(id),
-          getCart(),
+          user ? getCart() : Promise.resolve(null),
         ]);
 
         if (productRes.success) {
           setProduct(productRes.product);
         }
 
-        if (cartRes.success) {
+        if (cartRes?.success) {
           const existingItem = (cartRes.cart?.items || []).find(
             (item: any) =>
               item.productId?._id?.toString() === id.toString() ||
@@ -54,7 +57,7 @@ export default function ProductDetailsPage() {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, user]);
 
   if (loading) {
     return (

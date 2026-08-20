@@ -11,6 +11,7 @@ import type { Order } from "@/types/order";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [overallTotal, setOverallTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,6 +24,7 @@ export default function OrdersPage() {
 
         if (res.success) {
           setOrders(res.orders ?? []);
+          setOverallTotal(res.overallTotal ?? 0);
         } else {
           setError(res.message ?? "Unable to load your orders.");
         }
@@ -52,6 +54,24 @@ export default function OrdersPage() {
         <Alert severity="info">You have not placed any orders yet.</Alert>
       ) : (
         <Box>
+          <Box
+            sx={{
+              mb: 3,
+              p: 2.5,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              bgcolor: "background.paper",
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Overall bill for all orders
+            </Typography>
+            <Typography variant="h5" sx={{ mt: 0.5, fontWeight: 700 }}>
+              ₹{overallTotal.toLocaleString("en-IN")}
+            </Typography>
+          </Box>
+
           <Stack spacing={2}>
             {orders.map((order) => (
               <OrderCard key={order._id} order={order} />

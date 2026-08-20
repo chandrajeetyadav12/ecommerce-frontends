@@ -115,12 +115,43 @@ export default function CheckoutPage() {
                 addresses.map((address) => (
                     <Card
                         key={address._id}
+                        onClick={() => setSelectedAddress(address._id)}
                         sx={{
                             p: 2,
                             mt: 2,
+                            cursor: "pointer",
+                            border: "2px solid",
+                            borderColor:
+                                selectedAddress === address._id
+                                    ? "primary.main"
+                                    : "transparent",
                         }}
                     >
-                        {/* Address Details */}
+                        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+                            <Radio
+                                checked={selectedAddress === address._id}
+                                onChange={() => setSelectedAddress(address._id)}
+                                value={address._id}
+                                name="selected-address"
+                            />
+                            <Box>
+                                <Typography sx={{ fontWeight: 700 }}>
+                                    {address.fullName}
+                                </Typography>
+                                <Typography variant="body2">
+                                    {address.addressLine1}
+                                    {address.addressLine2
+                                        ? `, ${address.addressLine2}`
+                                        : ""}
+                                </Typography>
+                                <Typography variant="body2">
+                                    {address.city}, {address.state} - {address.pincode}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Phone: {address.phone}
+                                </Typography>
+                            </Box>
+                        </Box>
                     </Card>
                 ))
             )}
